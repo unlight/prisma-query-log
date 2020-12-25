@@ -54,19 +54,19 @@ export function createPrismaQueryEventHandler(
         query = query.replace(/\?/g, () => {
             let parameter = JSON.stringify(params.shift());
             if (colorQuery && colorParameter) {
-                parameter = colorParameter + parameter + '\x1b[0m' + colorQuery;
+                parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
             }
             return parameter;
         });
         if (colorQuery && colorParameter) {
-            query = colorQuery + query + '\x1b[0m';
+            query = colorQuery + query + '\u001B[0m';
         }
         logger(query);
     };
 }
 
 function unescapeQuery(query: string) {
-    const regex = /`\w+`\.`\w+`(\.`\w+`)?/g;
+    const regex = /`\w+`(\.`\w+`)?(\.`\w+`)?/g;
     const matchAllResult = query.matchAll(regex);
     const matches = Array.from(matchAllResult);
     for (let index = matches.length - 1; index >= 0; index--) {
@@ -76,14 +76,17 @@ function unescapeQuery(query: string) {
             continue;
         }
         const parts = fullMatch.split('`.`');
+        let replacement = '';
         if (parts.length >= 2) {
             parts.shift();
-            const replacement = parts.join('.').slice(0, -1);
-            query =
-                query.slice(0, matchIndex) +
-                replacement +
-                query.slice(matchIndex + fullMatch.length);
+            replacement = parts.join('.').slice(0, -1);
+        } else {
+            replacement = parts[0]!.slice(1, -1);
         }
+        query =
+            query.slice(0, matchIndex) +
+            replacement +
+            query.slice(matchIndex + fullMatch.length);
     }
 
     return query;

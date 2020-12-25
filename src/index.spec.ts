@@ -87,9 +87,9 @@ it('colorize query', () => {
             'SELECT ' +
             colorParameter +
             '"A"' +
-            '\x1b[0m' +
+            '\u001B[0m' +
             colorQuery +
-            '\x1b[0m',
+            '\u001B[0m',
     );
 });
 
@@ -107,5 +107,23 @@ it('parse date parameter', () => {
     log(event);
     expect(query).toEqual(
         'INSERT INTO Comment (commentId, createdAt) VALUES ("1","2020-12-25 19:35:06.803149100 UTC")',
+    );
+});
+
+it('update single statement', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        unescape: true,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query:
+            'UPDATE `data`.`Article` SET `updatedAt` = ?, `body` = ? WHERE `data`.`Article`.`articleId` IN (?)',
+        params: '[2020-12-25 20:02:45.589918800 UTC,"body","1"]',
+    };
+    log(event);
+    expect(query).toEqual(
+        'UPDATE Article SET updatedAt = "2020-12-25 20:02:45.589918800 UTC", body = "body" WHERE Article.articleId IN ("1")',
     );
 });
