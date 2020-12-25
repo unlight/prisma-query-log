@@ -76,6 +76,7 @@
     "remark-cli": "^9.0.0",
     "remark-license": "^5.1.1",
     "remark-toc": "^7.0.0",
+    "rollup-plugin-dts": "^2.0.1",
     "semantic-release": "^17.3.0",
     "semantic-release-monorepo": "^7.0.3",
     "simplytyped": "^3.3.0",

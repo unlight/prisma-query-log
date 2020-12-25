@@ -16,6 +16,7 @@ type CreatePrismaQueryEventHandlerArgs = {
     logger?: boolean | ((query: string) => unknown);
     /**
      * Remove backticks.
+     * Default: true
      */
     unescape?: boolean;
 };

@@ -2,6 +2,19 @@
 
 Log prisma query event
 
+Features:
+
+-   Substitute parameters
+-   Remove backticks and database prefix
+
+Before:
+
+![](./docs/before.png)
+
+After:
+
+![](./docs/after.png)
+
 ## Install
 
 ```sh
