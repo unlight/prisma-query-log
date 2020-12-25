@@ -92,3 +92,20 @@ it('colorize query', () => {
             '\x1b[0m',
     );
 });
+
+it('parse date parameter', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        unescape: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'INSERT INTO Comment (commentId, createdAt) VALUES (?,?)',
+        params: '["1",2020-12-25 19:35:06.803149100 UTC]',
+    };
+    log(event);
+    expect(query).toEqual(
+        'INSERT INTO Comment (commentId, createdAt) VALUES ("1","2020-12-25 19:35:06.803149100 UTC")',
+    );
+});
