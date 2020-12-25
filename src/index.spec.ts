@@ -4,7 +4,7 @@ import { createPrismaQueryEventHandler, PrismaQueryEvent } from '.';
 
 const basePrismaQueryEvent: PrismaQueryEvent = {
     timestamp: new Date(),
-    query: 'select 1',
+    query: 'SELECT 1',
     params: '[]',
     duration: 0,
     target: 'quaint::connector::metrics',
@@ -17,6 +17,20 @@ it('smoke', () => {
 it('should return function', () => {
     const log = createPrismaQueryEventHandler();
     expect(typeof log).toEqual('function');
+});
+
+it('empty parameters', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT 1',
+        params: '[]',
+    };
+    log(event);
+    expect(query).toEqual('SELECT 1');
 });
 
 it('replace parameters', () => {
@@ -49,5 +63,32 @@ it('unescape fields', () => {
     log(event);
     expect(query).toEqual(
         'SELECT Article.articleId FROM Article WHERE Article.articleId = "1"',
+    );
+});
+
+it('colorize query', () => {
+    let query = '';
+    const colorQuery = '\u001B[96m';
+    const colorParameter = '\u001B[90m';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        unescape: true,
+        colorQuery,
+        colorParameter,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT ?',
+        params: '["A"]',
+    };
+    log(event);
+    expect(query).toEqual(
+        colorQuery +
+            'SELECT ' +
+            colorParameter +
+            '"A"' +
+            '\x1b[0m' +
+            colorQuery +
+            '\x1b[0m',
     );
 });

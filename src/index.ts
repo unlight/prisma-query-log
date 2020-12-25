@@ -19,6 +19,14 @@ type CreatePrismaQueryEventHandlerArgs = {
      * Default: true
      */
     unescape?: boolean;
+    /**
+     * Color of query (ANSI escape code)
+     */
+    colorQuery?: string;
+    /**
+     * Color of parameters (ANSI escape code)
+     */
+    colorParameter?: string;
 };
 
 export function createPrismaQueryEventHandler(
@@ -29,6 +37,8 @@ export function createPrismaQueryEventHandler(
         return Function.prototype as (event: PrismaQueryEvent) => void; // noop
     }
     const unescape = args.unescape ?? true;
+    const colorParameter = args.colorParameter ?? args.colorQuery;
+    const colorQuery = args.colorQuery;
 
     return function prismaQueryLog(event: PrismaQueryEvent) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
@@ -38,9 +48,16 @@ export function createPrismaQueryEventHandler(
             query = unescapeQuery(query);
         }
         query = query.replace(/\?/g, () => {
-            return `${JSON.stringify(params.shift())}`;
+            let parameter = JSON.stringify(params.shift());
+            if (colorQuery && colorParameter) {
+                parameter = colorParameter + parameter + '\x1b[0m' + colorQuery;
+            }
+            return parameter;
         });
-        logger(`${query}`);
+        if (colorQuery && colorParameter) {
+            query = colorQuery + query + '\x1b[0m';
+        }
+        logger(query);
     };
 }
 

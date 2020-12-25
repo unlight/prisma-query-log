@@ -58,7 +58,16 @@ type CreatePrismaQueryEventHandlerArgs = {
     logger?: boolean | ((query: string) => unknown);
     /**
      * Remove backticks.
+     * Default: true
      */
     unescape?: boolean;
+    /**
+     * Color of query (ANSI escape code)
+     */
+    colorQuery?: string;
+    /**
+     * Color of parameters (ANSI escape code)
+     */
+    colorParameter?: string;
 };
 ```
