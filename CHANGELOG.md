@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/unlight/prisma-query-log/compare/v1.1.1...v1.1.2) (2020-12-25)
+
+
+### Bug Fixes
+
+* Unescape single fields ([12de9c1](https://github.com/unlight/prisma-query-log/commit/12de9c10c8e254d1023a49e4a9eec749866a7199))
+
 ## [1.1.1](https://github.com/unlight/prisma-query-log/compare/v1.1.0...v1.1.1) (2020-12-25)
 
 
