@@ -1,0 +1,12 @@
+#!/bin/bash
+PATH="$PWD/node_modules/.bin":$PATH
+set -e
+
+build_tsup() {
+    set -x
+    rm -rfv dist
+    npx tsup src/index.ts --format cjs --target es2017 --dts
+    cp -fv README.md LICENSE package.json dist
+}
+
+"$@"
