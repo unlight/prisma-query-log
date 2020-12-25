@@ -1,17 +1,51 @@
 # prisma-query-log
 
+Log prisma query event
+
 ## Install
 
-    git clone https://github.com/unlight/prisma-query-log
-
-If necessary:
-
-    npm run setupfrontend
-    npm run setupwebpack
-    npm run setupmutation
-    npm run setupkarma
-    npm run setupmocha
-
+```sh
+npm install --save-dev prisma-query-log
 ```
-npm install -g ultra-runner@latest
+
+## Usage
+
+```typescript
+import { createPrismaQueryEventHandler } from 'prisma-query-log';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient({
+    log: [
+        {
+            level: 'query',
+            emit: 'event',
+        },
+    ],
+});
+
+const log = createPrismaQueryEventHandler();
+
+prisma.$on('query', log);
+```
+
+## API
+
+```ts
+function createPrismaQueryEventHandler(
+    args?: CreatePrismaQueryEventHandlerArgs,
+): (event: PrismaQueryEvent) => void;
+
+type CreatePrismaQueryEventHandlerArgs = {
+    /**
+     * Boolean of custom log function,
+     * if true `console.log` will be used,
+     * if false noop - logs nothing.
+     * Default: true
+     */
+    logger?: boolean | ((query: string) => unknown);
+    /**
+     * Remove backticks.
+     */
+    unescape?: boolean;
+};
 ```

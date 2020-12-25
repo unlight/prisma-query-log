@@ -7,7 +7,16 @@ export type PrismaQueryEvent = {
 };
 
 type CreatePrismaQueryEventHandlerArgs = {
+    /**
+     * Boolean of custom log function,
+     * if true `console.log` will be used,
+     * if false noop - logs nothing.
+     * Default: true
+     */
     logger?: boolean | ((query: string) => unknown);
+    /**
+     * Remove backticks.
+     */
     unescape?: boolean;
 };
 

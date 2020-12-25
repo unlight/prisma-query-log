@@ -2,10 +2,9 @@
   "name": "prisma-query-log",
   "version": "0.0.0-dev",
   "license": "MIT",
-  "description": "",
+  "description": "Log prisma query event",
   "main": "index.js",
   "typings": "index.d.ts",
-  "author": "2020",
   "keywords": [],
   "scripts": {
     "test": "npm run lint:src && npm run lint:ts && npm run test:cov",
