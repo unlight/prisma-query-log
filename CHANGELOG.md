@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/unlight/prisma-query-log/compare/v1.1.0...v1.1.1) (2020-12-25)
+
+
+### Bug Fixes
+
+* Parse date parameter ([f41d4d5](https://github.com/unlight/prisma-query-log/commit/f41d4d580474100b82506a237f2e1849c4cf2cc1))
+
 # [1.1.0](https://github.com/unlight/prisma-query-log/compare/v1.0.0...v1.1.0) (2020-12-25)
 
 
