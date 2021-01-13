@@ -6,39 +6,57 @@ export type PrismaQueryEvent = {
     target: string;
 };
 
-type CreatePrismaQueryEventHandlerArgs = {
+const defaultOptions = {
     /**
      * Boolean of custom log function,
      * if true `console.log` will be used,
      * if false noop - logs nothing.
-     * Default: true
      */
-    logger?: boolean | ((query: string) => unknown);
+    logger: true as boolean | ((query: string) => unknown),
     /**
      * Remove backticks.
-     * Default: true
      */
-    unescape?: boolean;
+    unescape: true,
     /**
      * Color of query (ANSI escape code)
      */
-    colorQuery?: string;
+    colorQuery: undefined as undefined | string,
     /**
      * Color of parameters (ANSI escape code)
      */
-    colorParameter?: string;
+    colorParameter: undefined as undefined | string,
+    /**
+     * Format SQL query.
+     */
+    format: false,
+    /**
+     * Poor Man's T-SQL Formatter options
+     * https://github.com/TaoK/poor-mans-t-sql-formatter-npm-package#usage
+     */
+    formatterOptions: {
+        maxLineWidth: 0 as number | undefined,
+        indent: '    ' as string | undefined,
+        expandCommaLists: false as boolean | undefined,
+        expandInLists: false as boolean | undefined,
+    },
 };
 
+type CreatePrismaQueryEventHandlerArgs = typeof defaultOptions;
+
+let formatter: any;
+
 export function createPrismaQueryEventHandler(
-    args: CreatePrismaQueryEventHandlerArgs = {},
+    args: Partial<CreatePrismaQueryEventHandlerArgs> = {},
 ): (event: PrismaQueryEvent) => void {
-    const logger = args.logger === true ? console.log : args.logger ?? false;
+    const customFormatterOptions = args?.formatterOptions ?? {};
+    const options = { ...defaultOptions, ...args };
+    const logger = options.logger === true ? console.log : options.logger ?? false;
     if (!logger) {
         return Function.prototype as (event: PrismaQueryEvent) => void; // noop
     }
-    const unescape = args.unescape ?? true;
-    const colorParameter = args.colorParameter ?? args.colorQuery;
-    const colorQuery = args.colorQuery;
+    const { unescape, colorQuery, format } = options;
+    const formatterOptions = { ...options.formatterOptions, ...customFormatterOptions };
+    const colorParameter = options.colorParameter ?? colorQuery;
 
     return function prismaQueryLog(event: PrismaQueryEvent) {
         const eventParams = event.params.replace(
@@ -51,6 +69,18 @@ export function createPrismaQueryEventHandler(
         if (unescape) {
             query = unescapeQuery(query);
         }
+
+        if (format) {
+            if (!formatter) {
+                formatter = require('poor-mans-t-sql-formatter');
+                if (!formatterOptions.maxLineWidth) {
+                    const termSize = require('term-size');
+                    formatterOptions.maxLineWidth = termSize().columns - 12;
+                }
+            }
+            query = '\n' + formatter.formatSql(query, formatterOptions).text.trim();
+        }
+
         query = query.replace(/\?/g, () => {
             let parameter = JSON.stringify(params.shift());
             if (colorQuery && colorParameter) {
@@ -61,6 +91,7 @@ export function createPrismaQueryEventHandler(
         if (colorQuery && colorParameter) {
             query = colorQuery + query + '\u001B[0m';
         }
+
         logger(query);
     };
 }

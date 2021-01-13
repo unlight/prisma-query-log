@@ -23,6 +23,7 @@ it('empty parameters', () => {
     let query = '';
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
+        format: false,
     });
     const event = {
         ...basePrismaQueryEvent,
@@ -38,6 +39,7 @@ it('replace parameters', () => {
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
         unescape: false,
+        format: false,
     });
     const event = {
         ...basePrismaQueryEvent,
@@ -53,6 +55,7 @@ it('unescape fields', () => {
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
         unescape: true,
+        format: false,
     });
     const event = {
         ...basePrismaQueryEvent,
@@ -73,6 +76,7 @@ it('colorize query', () => {
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
         unescape: true,
+        format: false,
         colorQuery,
         colorParameter,
     });
@@ -98,6 +102,7 @@ it('parse date parameter', () => {
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
         unescape: false,
+        format: false,
     });
     const event = {
         ...basePrismaQueryEvent,
@@ -115,6 +120,7 @@ it('update single statement', () => {
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
         unescape: true,
+        format: false,
     });
     const event = {
         ...basePrismaQueryEvent,
@@ -125,5 +131,59 @@ it('update single statement', () => {
     log(event);
     expect(query).toEqual(
         'UPDATE Article SET updatedAt = "2020-12-25 20:02:45.589918800 UTC", body = "body" WHERE Article.articleId IN ("1")',
+    );
+});
+
+it('format sql defaults', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: true,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT EmployeeId, FirstName FROM Employees',
+        params: '[]',
+    };
+    log(event);
+    expect(query).toEqual(`\nSELECT EmployeeId, FirstName
+FROM Employees`);
+});
+
+it('format join query', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: true,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: `SELECT * FROM Someplace S FULL OUTER JOIN Elsewhere AS E WITH (HOLDLOCK, INDEX(IX_TEST)) ON 1=1 and X = ? and Y = ?`,
+        params: '[1,"B"]',
+    };
+    log(event);
+    expect(query).toEqual(`\nSELECT *
+FROM Someplace S
+FULL OUTER JOIN Elsewhere AS E WITH (HOLDLOCK, INDEX (IX_TEST)) ON 1 = 1
+    AND X = 1
+    AND Y = "B"`);
+});
+
+it('format with color', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: true,
+        colorQuery: '\u001B[96m',
+        colorParameter: '\u001B[90m',
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: `SELECT * FROM Someplace S WHERE X = ?`,
+        params: '[1]',
+    };
+    log(event);
+    expect(query).toEqual(
+        `\u001b[96m\nSELECT *\nFROM Someplace S\nWHERE X = \u001b[90m${1}\u001b[0m\u001b[96m\u001b[0m`,
     );
 });

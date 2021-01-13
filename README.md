@@ -7,14 +7,6 @@ Features:
 -   Substitute parameters
 -   Remove backticks and database prefix
 
-Before:
-
-![](./docs/before.png)
-
-After:
-
-![](./docs/after.png)
-
 ## Install
 
 ```sh
@@ -45,29 +37,41 @@ prisma.$on('query', log);
 
 ```ts
 function createPrismaQueryEventHandler(
-    args?: CreatePrismaQueryEventHandlerArgs,
+    options?: CreatePrismaQueryEventHandlerArgs,
 ): (event: PrismaQueryEvent) => void;
 
-type CreatePrismaQueryEventHandlerArgs = {
+const defaultOptions = {
     /**
      * Boolean of custom log function,
      * if true `console.log` will be used,
      * if false noop - logs nothing.
-     * Default: true
      */
-    logger?: boolean | ((query: string) => unknown);
+    logger: true as boolean | ((query: string) => unknown),
     /**
      * Remove backticks.
-     * Default: true
      */
-    unescape?: boolean;
+    unescape: true,
     /**
      * Color of query (ANSI escape code)
      */
-    colorQuery?: string;
+    colorQuery: undefined as undefined | string,
     /**
      * Color of parameters (ANSI escape code)
      */
-    colorParameter?: string;
+    colorParameter: undefined as undefined | string,
+    /**
+     * Format SQL query.
+     */
+    format: false,
+    /**
+     * Poor Man's T-SQL Formatter options
+     * https://github.com/TaoK/poor-mans-t-sql-formatter-npm-package#usage
+     */
+    formatterOptions: {
+        maxLineWidth: 80,
+        indent: '    ',
+        expandCommaLists: false,
+        expandInLists: false,
+    },
 };
 ```
