@@ -79,7 +79,6 @@
     "watchexec-bin": "^1.0.0"
   },
   "dependencies": {
-    "poor-mans-t-sql-formatter": "^1.6.10",
-    "term-size": "^2.2.1"
+    "@gwax/sql-formatter": "^3.0.3"
   }
 }

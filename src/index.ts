@@ -6,6 +6,13 @@ export type PrismaQueryEvent = {
     target: string;
 };
 
+const defaultFormatterOptions = {
+    language: undefined as string | undefined,
+    indent: '    ',
+    uppercase: true,
+    linesBetweenQueries: 1,
+};
+
 const defaultOptions = {
     /**
      * Boolean of custom log function,
@@ -30,15 +37,12 @@ const defaultOptions = {
      */
     format: false,
     /**
-     * Poor Man's T-SQL Formatter options
-     * https://github.com/TaoK/poor-mans-t-sql-formatter-npm-package#usage
+     * Formatter options
+     * https://github.com/gwax/sql-formatter#usage
      */
-    formatterOptions: {
-        maxLineWidth: 0 as number | undefined,
-        indent: '    ' as string | undefined,
-        expandCommaLists: false as boolean | undefined,
-        expandInLists: false as boolean | undefined,
-    },
+    formatterOptions: defaultFormatterOptions as Partial<
+        typeof defaultFormatterOptions
+    >,
 };
 
 type CreatePrismaQueryEventHandlerArgs = typeof defaultOptions;
@@ -72,13 +76,9 @@ export function createPrismaQueryEventHandler(
 
         if (format) {
             if (!formatter) {
-                formatter = require('poor-mans-t-sql-formatter');
-                if (!formatterOptions.maxLineWidth) {
-                    const termSize = require('term-size');
-                    formatterOptions.maxLineWidth = termSize().columns - 12;
-                }
+                formatter = require('@gwax/sql-formatter');
             }
-            query = '\n' + formatter.formatSql(query, formatterOptions).text.trim();
+            query = '\n' + formatter.format(query, formatterOptions).trim();
         }
 
         query = query.replace(/\?/g, () => {
