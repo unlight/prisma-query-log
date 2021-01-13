@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/unlight/prisma-query-log/compare/v1.1.2...v1.2.0) (2021-01-13)
+
+
+### Features
+
+* Option to format query ([ec26a8e](https://github.com/unlight/prisma-query-log/commit/ec26a8e7745ba542ad8628fa67f200df34cc693e))
+
 ## [1.1.2](https://github.com/unlight/prisma-query-log/compare/v1.1.1...v1.1.2) (2020-12-25)
 
 
