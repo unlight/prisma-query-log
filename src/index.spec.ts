@@ -215,3 +215,27 @@ SELECT *
 FROM Someplace S
 WHERE X = 1`);
 });
+
+it('long parameters', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: true,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: `SELECT Tag.tagId FROM Tag WHERE Tag.tagId IN (?,?,?,?)`,
+        params:
+            '["cki4upcor0036jov4h6hab7qi", "cki4upcor0037jov4y4syn2bg", "cki4upcor0038jov46rrlfy2a", "cki4upcor0039jov49sm73sfa"]',
+    };
+    log(event);
+    expect(query).toEqual(`
+SELECT Tag.tagId
+FROM Tag
+WHERE Tag.tagId IN (
+        "cki4upcor0036jov4h6hab7qi",
+        "cki4upcor0037jov4y4syn2bg",
+        "cki4upcor0038jov46rrlfy2a",
+        "cki4upcor0039jov49sm73sfa"
+    )`);
+});

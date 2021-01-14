@@ -59,8 +59,9 @@ export function createPrismaQueryEventHandler(
     if (!logger) {
         return Function.prototype as (event: PrismaQueryEvent) => void; // noop
     }
-    const { unescape, colorQuery, format } = options;
+    const { unescape, format } = options;
     const formatterOptions = { ...options.formatterOptions, ...customFormatterOptions };
+    const colorQuery = format ? false : options.colorQuery;
     const colorParameter = options.colorParameter ?? colorQuery;
 
     return function prismaQueryLog(event: PrismaQueryEvent) {
@@ -69,30 +70,29 @@ export function createPrismaQueryEventHandler(
             date => `"${date}"`,
         );
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-        let params: any[] = JSON.parse(eventParams);
+        const params: any[] = JSON.parse(eventParams);
         let query = event.query;
         if (unescape) {
             query = unescapeQuery(query);
         }
 
+        query = query.replace(/\?/g, () => {
+            let parameter = JSON.stringify(params.shift());
+            if (colorQuery && colorParameter) {
+                parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
+            }
+            return parameter;
+        });
+
         if (format) {
             if (!formatter) {
                 formatter = require('@sqltools/formatter');
             }
-            params = params.map(p => JSON.stringify(p));
-            query =
-                '\n' + formatter.format(query, { ...formatterOptions, params }).trim();
-        } else {
-            query = query.replace(/\?/g, () => {
-                let parameter = JSON.stringify(params.shift());
-                if (colorQuery && colorParameter) {
-                    parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
-                }
-                return parameter;
-            });
-            if (colorQuery && colorParameter) {
-                query = colorQuery + query + '\u001B[0m';
-            }
+            query = '\n' + formatter.format(query, formatterOptions).trim();
+        }
+
+        if (colorQuery && colorParameter) {
+            query = colorQuery + query + '\u001B[0m';
         }
 
         logger(query);
