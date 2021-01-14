@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/unlight/prisma-query-log/compare/v2.0.0...v2.0.1) (2021-01-14)
+
+
+### Bug Fixes
+
+* Improve sql formatter ([f51ec9a](https://github.com/unlight/prisma-query-log/commit/f51ec9a372ea2a60721c3d0b7c6c488125aabf52))
+
 # [2.0.0](https://github.com/unlight/prisma-query-log/compare/v1.2.0...v2.0.0) (2021-01-13)
 
 
