@@ -19,6 +19,19 @@ it('should return function', () => {
     expect(typeof log).toEqual('function');
 });
 
+it('logger disabled noop', () => {
+    const log = createPrismaQueryEventHandler({ logger: false });
+    expect(typeof log).toBe('function');
+    log(
+        Object.create({
+            ...basePrismaQueryEvent,
+            get query() {
+                throw new Error('Should not be called');
+            },
+        }),
+    );
+});
+
 it('empty parameters', () => {
     let query = '';
     const log = createPrismaQueryEventHandler({
@@ -34,7 +47,7 @@ it('empty parameters', () => {
     expect(query).toEqual('SELECT 1');
 });
 
-it('replace parameters', () => {
+it('replace parameters default', () => {
     let query = '';
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
@@ -48,6 +61,23 @@ it('replace parameters', () => {
     };
     log(event);
     expect(query).toEqual('SELECT VERSION() LIMIT 1 OFFSET 0');
+});
+
+it('replace parameters format', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        unescape: false,
+        format: true,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT ?, ?',
+        params: '[1,"A"]',
+    };
+    log(event);
+    expect(query).toEqual(`\nSELECT 1,
+    "A"`);
 });
 
 it('unescape fields', () => {
@@ -146,11 +176,7 @@ it('format sql defaults', () => {
         params: '[]',
     };
     log(event);
-    expect(query).toEqual(`\nSELECT
-    EmployeeId,
-    FirstName
-FROM
-    Employees`);
+    expect(query).toEqual(`\nSELECT EmployeeId,\n    FirstName\nFROM Employees`);
 });
 
 it('format join query', () => {
@@ -161,17 +187,13 @@ it('format join query', () => {
     });
     const event = {
         ...basePrismaQueryEvent,
-        query: `SELECT * FROM Someplace S FULL OUTER JOIN Elsewhere AS E WITH (HOLDLOCK, INDEX(IX_TEST)) ON 1=1 and X = ? and Y = ?`,
+        query: `SELECT * FROM Someplace S JOIN Elsewhere AS E WITH (HOLDLOCK) ON 1=1 and X = ? and Y = ?`,
         params: '[1,"B"]',
     };
     log(event);
-    expect(query).toEqual(`\nSELECT
-    *
-FROM
-    Someplace S FULL
-    OUTER JOIN Elsewhere AS E WITH (HOLDLOCK, INDEX(IX_TEST)) ON 1 = 1
-    AND X = 1
-    AND Y = "B"`);
+    expect(query).toEqual(
+        `\nSELECT *\nFROM Someplace S\n    JOIN Elsewhere AS E WITH (HOLDLOCK) ON 1 = 1\n    and X = 1\n    and Y = "B"`,
+    );
 });
 
 it('format with color', () => {
@@ -188,5 +210,8 @@ it('format with color', () => {
         params: '[1]',
     };
     log(event);
-    expect(query).toBeTruthy();
+    expect(query).toEqual(`
+SELECT *
+FROM Someplace S
+WHERE X = 1`);
 });

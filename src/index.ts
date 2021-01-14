@@ -9,8 +9,8 @@ export type PrismaQueryEvent = {
 const defaultFormatterOptions = {
     language: undefined as string | undefined,
     indent: '    ',
-    uppercase: true,
-    linesBetweenQueries: 1,
+    reservedWordCase: null as 'upper' | 'lower' | null,
+    linesBetweenQueries: 1 as number | 'preserve',
 };
 
 const defaultOptions = {
@@ -33,12 +33,13 @@ const defaultOptions = {
      */
     colorParameter: undefined as undefined | string,
     /**
-     * Format SQL query.
+     * Format SQL query,
+     * colorQuery/colorParameter will be ignored.
      */
     format: false,
     /**
      * Formatter options
-     * https://github.com/gwax/sql-formatter#usage
+     * https://github.com/mtxr/vscode-sqltools/tree/master/packages/formatter#options
      */
     formatterOptions: defaultFormatterOptions as Partial<
         typeof defaultFormatterOptions
@@ -52,7 +53,7 @@ let formatter: any;
 export function createPrismaQueryEventHandler(
     args: Partial<CreatePrismaQueryEventHandlerArgs> = {},
 ): (event: PrismaQueryEvent) => void {
-    const customFormatterOptions = args?.formatterOptions ?? {};
+    const customFormatterOptions = args.formatterOptions ?? {};
     const options = { ...defaultOptions, ...args };
     const logger = options.logger === true ? console.log : options.logger ?? false;
     if (!logger) {
@@ -68,7 +69,7 @@ export function createPrismaQueryEventHandler(
             date => `"${date}"`,
         );
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-        const params: any[] = JSON.parse(eventParams);
+        let params: any[] = JSON.parse(eventParams);
         let query = event.query;
         if (unescape) {
             query = unescapeQuery(query);
@@ -76,20 +77,22 @@ export function createPrismaQueryEventHandler(
 
         if (format) {
             if (!formatter) {
-                formatter = require('@gwax/sql-formatter');
+                formatter = require('@sqltools/formatter');
             }
-            query = '\n' + formatter.format(query, formatterOptions).trim();
-        }
-
-        query = query.replace(/\?/g, () => {
-            let parameter = JSON.stringify(params.shift());
+            params = params.map(p => JSON.stringify(p));
+            query =
+                '\n' + formatter.format(query, { ...formatterOptions, params }).trim();
+        } else {
+            query = query.replace(/\?/g, () => {
+                let parameter = JSON.stringify(params.shift());
+                if (colorQuery && colorParameter) {
+                    parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
+                }
+                return parameter;
+            });
             if (colorQuery && colorParameter) {
-                parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
+                query = colorQuery + query + '\u001B[0m';
             }
-            return parameter;
-        });
-        if (colorQuery && colorParameter) {
-            query = colorQuery + query + '\u001B[0m';
         }
 
         logger(query);
