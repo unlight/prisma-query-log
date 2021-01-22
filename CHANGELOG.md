@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/unlight/prisma-query-log/compare/v2.0.2...v2.0.3) (2021-01-22)
+
+
+### Bug Fixes
+
+* No new line on formatted query ([44f4f2a](https://github.com/unlight/prisma-query-log/commit/44f4f2a21a713d9ac4bccb4db58deefa10d234b3))
+
 ## [2.0.2](https://github.com/unlight/prisma-query-log/compare/v2.0.1...v2.0.2) (2021-01-14)
 
 
