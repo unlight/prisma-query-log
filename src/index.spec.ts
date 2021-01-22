@@ -76,7 +76,7 @@ it('replace parameters format', () => {
         params: '[1,"A"]',
     };
     log(event);
-    expect(query).toEqual(`\nSELECT 1,
+    expect(query).toEqual(`SELECT 1,
     "A"`);
 });
 
@@ -176,7 +176,7 @@ it('format sql defaults', () => {
         params: '[]',
     };
     log(event);
-    expect(query).toEqual(`\nSELECT EmployeeId,\n    FirstName\nFROM Employees`);
+    expect(query).toEqual(`SELECT EmployeeId,\n    FirstName\nFROM Employees`);
 });
 
 it('format join query', () => {
@@ -192,7 +192,7 @@ it('format join query', () => {
     };
     log(event);
     expect(query).toEqual(
-        `\nSELECT *\nFROM Someplace S\n    JOIN Elsewhere AS E WITH (HOLDLOCK) ON 1 = 1\n    and X = 1\n    and Y = "B"`,
+        `SELECT *\nFROM Someplace S\n    JOIN Elsewhere AS E WITH (HOLDLOCK) ON 1 = 1\n    and X = 1\n    and Y = "B"`,
     );
 });
 
@@ -210,8 +210,7 @@ it('format with color', () => {
         params: '[1]',
     };
     log(event);
-    expect(query).toEqual(`
-SELECT *
+    expect(query).toEqual(`SELECT *
 FROM Someplace S
 WHERE X = 1`);
 });
@@ -229,8 +228,7 @@ it('long parameters', () => {
             '["cki4upcor0036jov4h6hab7qi", "cki4upcor0037jov4y4syn2bg", "cki4upcor0038jov46rrlfy2a", "cki4upcor0039jov49sm73sfa"]',
     };
     log(event);
-    expect(query).toEqual(`
-SELECT Tag.tagId
+    expect(query).toEqual(`SELECT Tag.tagId
 FROM Tag
 WHERE Tag.tagId IN (
         "cki4upcor0036jov4h6hab7qi",

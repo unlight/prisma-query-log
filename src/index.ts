@@ -88,7 +88,7 @@ export function createPrismaQueryEventHandler(
             if (!formatter) {
                 formatter = require('@sqltools/formatter');
             }
-            query = '\n' + formatter.format(query, formatterOptions).trim();
+            query = formatter.format(query, formatterOptions).trim();
         }
 
         if (colorQuery && colorParameter) {
