@@ -76,12 +76,14 @@ export function createPrismaQueryEventHandler(
             query = unescapeQuery(query);
         }
 
-        query = query.replace(/\?/g, () => {
+        query = query.replace(/\?/g, (s, index, string: string) => {
             let parameter = JSON.stringify(params.shift());
+            const previousChar = string.charAt(index - 1);
             if (colorQuery && colorParameter) {
                 parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
             }
-            return parameter;
+
+            return (previousChar === ',' ? ' ' : '') + parameter;
         });
 
         if (format) {

@@ -1,4 +1,5 @@
 import expect from 'expect';
+import stripAnsi from 'strip-ansi';
 
 import { createPrismaQueryEventHandler, PrismaQueryEvent } from '.';
 
@@ -22,14 +23,8 @@ it('should return function', () => {
 it('logger disabled noop', () => {
     const log = createPrismaQueryEventHandler({ logger: false });
     expect(typeof log).toBe('function');
-    log(
-        Object.create({
-            ...basePrismaQueryEvent,
-            get query() {
-                throw new Error('Should not be called');
-            },
-        }),
-    );
+    expect(log).toBe(Function.prototype);
+    expect(() => log(basePrismaQueryEvent)).not.toThrow();
 });
 
 it('empty parameters', () => {
@@ -141,7 +136,7 @@ it('parse date parameter', () => {
     };
     log(event);
     expect(query).toEqual(
-        'INSERT INTO Comment (commentId, createdAt) VALUES ("1","2020-12-25 19:35:06.803149100 UTC")',
+        'INSERT INTO Comment (commentId, createdAt) VALUES ("1", "2020-12-25 19:35:06.803149100 UTC")',
     );
 });
 
@@ -236,4 +231,36 @@ WHERE Tag.tagId IN (
         "cki4upcor0038jov46rrlfy2a",
         "cki4upcor0039jov49sm73sfa"
     )`);
+});
+
+it('comma between parameters without color', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT 1 WHERE `data`.`Article`.`articleId` IN (?,?,?)',
+        params: '["1", "2", "3"]',
+    };
+    log(event);
+    expect(query).toContain('articleId IN ("1", "2", "3")');
+});
+
+it('comma between parameters with color', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: false,
+        colorQuery: '\u001B[96m',
+        colorParameter: '\u001B[90m',
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT 1 WHERE `data`.`Article`.`articleId` IN (?,?,?)',
+        params: '["1", "2", "3"]',
+    };
+    log(event);
+    expect(stripAnsi(query)).toContain('articleId IN ("1", "2", "3")');
 });

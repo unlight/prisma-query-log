@@ -12,7 +12,6 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
     "noImplicitAny": false,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
