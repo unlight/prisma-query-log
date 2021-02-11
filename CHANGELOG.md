@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/unlight/prisma-query-log/compare/v2.0.3...v2.1.0) (2021-02-11)
+
+
+### Features
+
+* Improved format of where in (?) statement ([cf87b9d](https://github.com/unlight/prisma-query-log/commit/cf87b9dc557e7cf68b632642db469290ec7ce17e))
+
 ## [2.0.3](https://github.com/unlight/prisma-query-log/compare/v2.0.2...v2.0.3) (2021-01-22)
 
 
