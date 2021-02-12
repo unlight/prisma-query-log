@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/unlight/prisma-query-log/compare/v2.1.0...v3.0.0) (2021-02-12)
+
+
+### Features
+
+* Made configuration flatten ([4dac682](https://github.com/unlight/prisma-query-log/commit/4dac68291d3d36febefa72c6550218b98b79b11c))
+
+
+### BREAKING CHANGES
+
+* Interface of configutation is changed, now it is flat
+
 # [2.1.0](https://github.com/unlight/prisma-query-log/compare/v2.0.3...v2.1.0) (2021-02-11)
 
 
