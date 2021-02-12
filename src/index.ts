@@ -1,49 +1,11 @@
+import { defaultOptions } from './options';
+
 export type PrismaQueryEvent = {
     timestamp: Date;
     query: string;
     params: string;
     duration: number;
     target: string;
-};
-
-const defaultFormatterOptions = {
-    language: undefined as string | undefined,
-    indent: '    ',
-    reservedWordCase: null as 'upper' | 'lower' | null,
-    linesBetweenQueries: 1 as number | 'preserve',
-};
-
-const defaultOptions = {
-    /**
-     * Boolean of custom log function,
-     * if true `console.log` will be used,
-     * if false noop - logs nothing.
-     */
-    logger: true as boolean | ((query: string) => unknown),
-    /**
-     * Remove backticks.
-     */
-    unescape: true,
-    /**
-     * Color of query (ANSI escape code)
-     */
-    colorQuery: undefined as undefined | string,
-    /**
-     * Color of parameters (ANSI escape code)
-     */
-    colorParameter: undefined as undefined | string,
-    /**
-     * Format SQL query,
-     * colorQuery/colorParameter will be ignored.
-     */
-    format: false,
-    /**
-     * Formatter options
-     * https://github.com/mtxr/vscode-sqltools/tree/master/packages/formatter#options
-     */
-    formatterOptions: defaultFormatterOptions as Partial<
-        typeof defaultFormatterOptions
-    >,
 };
 
 type CreatePrismaQueryEventHandlerArgs = typeof defaultOptions;
@@ -53,14 +15,12 @@ let formatter: any;
 export function createPrismaQueryEventHandler(
     args: Partial<CreatePrismaQueryEventHandlerArgs> = {},
 ): (event: PrismaQueryEvent) => void {
-    const customFormatterOptions = args.formatterOptions ?? {};
     const options = { ...defaultOptions, ...args };
-    const logger = options.logger === true ? console.log : options.logger ?? false;
-    if (!logger) {
+    const logger = options.logger === true ? console.log : options.logger;
+    if (typeof logger !== 'function') {
         return Function.prototype as (event: PrismaQueryEvent) => void; // noop
     }
     const { unescape, format } = options;
-    const formatterOptions = { ...options.formatterOptions, ...customFormatterOptions };
     const colorQuery = format ? false : options.colorQuery;
     const colorParameter = options.colorParameter ?? colorQuery;
 
@@ -76,7 +36,7 @@ export function createPrismaQueryEventHandler(
             query = unescapeQuery(query);
         }
 
-        query = query.replace(/\?/g, (s, index, string: string) => {
+        query = query.replace(/\?/g, (_, index, string: string) => {
             let parameter = JSON.stringify(params.shift());
             const previousChar = string.charAt(index - 1);
             if (colorQuery && colorParameter) {
@@ -90,7 +50,7 @@ export function createPrismaQueryEventHandler(
             if (!formatter) {
                 formatter = require('@sqltools/formatter');
             }
-            query = formatter.format(query, formatterOptions).trim();
+            query = formatter.format(query, options).trim();
         }
 
         if (colorQuery && colorParameter) {

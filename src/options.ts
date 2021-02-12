@@ -1,46 +1,4 @@
-# prisma-query-log
-
-Log prisma query event
-
-Features:
-
--   Substitute parameters
--   Remove backticks and database prefix
-
-## Install
-
-```sh
-npm install --save-dev prisma-query-log
-```
-
-## Usage
-
-```typescript
-import { createPrismaQueryEventHandler } from 'prisma-query-log';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient({
-    log: [
-        {
-            level: 'query',
-            emit: 'event',
-        },
-    ],
-});
-
-const log = createPrismaQueryEventHandler();
-
-prisma.$on('query', log);
-```
-
-## API
-
-```ts
-function createPrismaQueryEventHandler(
-    options?: CreatePrismaQueryEventHandlerArgs,
-): (event: PrismaQueryEvent) => void;
-
-const defaultOptions = {
+export const defaultOptions = {
     /**
      * Boolean of custom log function,
      * if true `console.log` will be used,
@@ -88,4 +46,3 @@ const defaultOptions = {
      */
     linesBetweenQueries: 1 as number | 'preserve',
 };
-```

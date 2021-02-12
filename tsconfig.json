@@ -9,6 +9,7 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "commonjs",
+    "noUncheckedIndexedAccess": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "strict": true,
