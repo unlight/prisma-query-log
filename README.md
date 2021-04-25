@@ -89,3 +89,17 @@ const defaultOptions = {
     linesBetweenQueries: 1 as number | 'preserve',
 };
 ```
+
+## Other projects
+
+https://github.com/unlight/nestolog - Logger for NestJS, implements `LoggerService`
+
+## Screenshots
+
+#### Before
+
+![](docs/before.png)
+
+#### After
+
+![](docs/after.png)
