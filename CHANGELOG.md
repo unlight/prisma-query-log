@@ -1,3 +1,10 @@
+### [3.0.1](https://github.com/unlight/prisma-query-log/compare/v3.0.0...v3.0.1) (2021-04-25)
+
+
+### Bug Fixes
+
+* Added github home page link to package json ([3c3b8b4](https://github.com/unlight/prisma-query-log/commit/3c3b8b4f13e630d93ec42e443426a9bb045b0810)), closes [#1](https://github.com/unlight/prisma-query-log/issues/1) [#2](https://github.com/unlight/prisma-query-log/issues/2)
+
 # [3.0.0](https://github.com/unlight/prisma-query-log/compare/v2.1.0...v3.0.0) (2021-02-12)
 
 
