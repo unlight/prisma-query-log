@@ -31,6 +31,14 @@
   "dependencies": {
     "@sqltools/formatter": "^1.2.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unlight/prisma-query-log.git"
+  },
+  "bugs": {
+    "url": "https://github.com/unlight/prisma-query-log/issues"
+  },
+  "homepage": "https://github.com/unlight/prisma-query-log#readme",
   "ultra": {
     "concurrent": [
       "lint",
