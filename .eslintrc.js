@@ -17,8 +17,6 @@ module.exports = {
         'plugin:etc/recommended',
         'plugin:prettier/recommended',
         'prettier',
-        'prettier/@typescript-eslint',
-        'prettier/unicorn',
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -48,11 +46,7 @@ module.exports = {
     rules: {
         // core
         'consistent-return': [1, { treatUndefinedAsUnspecified: true }],
-        quotes: [
-            1,
-            'single',
-            { allowTemplateLiterals: true, avoidEscape: true },
-        ],
+        quotes: [1, 'single', { allowTemplateLiterals: true, avoidEscape: true }],
         semi: [1, 'always'],
         'max-lines': [1, { max: 300 }],
         'max-params': [1, { max: 5 }],
