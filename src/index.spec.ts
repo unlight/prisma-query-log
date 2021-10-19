@@ -84,8 +84,7 @@ it('unescape fields', () => {
     });
     const event = {
         ...basePrismaQueryEvent,
-        query:
-            'SELECT `data`.`Article`.`articleId` FROM `data`.`Article` WHERE `data`.`Article`.`articleId` = ?',
+        query: 'SELECT `data`.`Article`.`articleId` FROM `data`.`Article` WHERE `data`.`Article`.`articleId` = ?',
         params: '["1"]',
     };
     log(event);
@@ -149,8 +148,7 @@ it('update single statement', () => {
     });
     const event = {
         ...basePrismaQueryEvent,
-        query:
-            'UPDATE `data`.`Article` SET `updatedAt` = ?, `body` = ? WHERE `data`.`Article`.`articleId` IN (?)',
+        query: 'UPDATE `data`.`Article` SET `updatedAt` = ?, `body` = ? WHERE `data`.`Article`.`articleId` IN (?)',
         params: '[2020-12-25 20:02:45.589918800 UTC,"body","1"]',
     };
     log(event);
@@ -219,8 +217,7 @@ it('long parameters', () => {
     const event = {
         ...basePrismaQueryEvent,
         query: `SELECT Tag.tagId FROM Tag WHERE Tag.tagId IN (?,?,?,?)`,
-        params:
-            '["cki4upcor0036jov4h6hab7qi", "cki4upcor0037jov4y4syn2bg", "cki4upcor0038jov46rrlfy2a", "cki4upcor0039jov49sm73sfa"]',
+        params: '["cki4upcor0036jov4h6hab7qi", "cki4upcor0037jov4y4syn2bg", "cki4upcor0038jov46rrlfy2a", "cki4upcor0039jov49sm73sfa"]',
     };
     log(event);
     expect(query).toEqual(`SELECT Tag.tagId
