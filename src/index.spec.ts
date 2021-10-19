@@ -131,12 +131,12 @@ it('parse date parameter', () => {
     });
     const event = {
         ...basePrismaQueryEvent,
-        query: 'INSERT INTO Comment (commentId, createdAt) VALUES (?,?)',
-        params: '["1",2020-12-25 19:35:06.803149100 UTC]',
+        query: 'INSERT INTO Comment (commentId, createdAt, updatedAt) VALUES (?,?,?)',
+        params: '["1",2020-12-25 19:35:06.803149100 UTC, 2021-10-01 00:00:00 UTC]',
     };
     log(event);
     expect(query).toEqual(
-        'INSERT INTO Comment (commentId, createdAt) VALUES ("1", "2020-12-25 19:35:06.803149100 UTC")',
+        'INSERT INTO Comment (commentId, createdAt, updatedAt) VALUES ("1", "2020-12-25 19:35:06.803149100 UTC", "2021-10-01 00:00:00 UTC")',
     );
 });
 

@@ -26,7 +26,7 @@ export function createPrismaQueryEventHandler(
 
     return function prismaQueryLog(event: PrismaQueryEvent) {
         const eventParams = event.params.replace(
-            /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+ UTC/g,
+            /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.?\d* UTC/g,
             date => `"${date}"`,
         );
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
