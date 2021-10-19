@@ -1,3 +1,10 @@
+### [3.0.2](https://github.com/unlight/prisma-query-log/compare/v3.0.1...v3.0.2) (2021-10-19)
+
+
+### Bug Fixes
+
+* Date parsing when timestamp has no decimals ([4655519](https://github.com/unlight/prisma-query-log/commit/46555198f83ae7175cbcec256b8dc8c647de67d9)), closes [#3](https://github.com/unlight/prisma-query-log/issues/3)
+
 ### [3.0.1](https://github.com/unlight/prisma-query-log/compare/v3.0.0...v3.0.1) (2021-04-25)
 
 
