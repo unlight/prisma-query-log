@@ -1,6 +1,7 @@
 # prisma-query-log
 
-Log prisma query event
+Log prisma query event.
+Currently works only for SQLite, MySQL.
 
 Features:
 
