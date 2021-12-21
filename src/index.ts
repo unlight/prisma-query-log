@@ -10,7 +10,7 @@ export type PrismaQueryEvent = {
 
 type CreatePrismaQueryEventHandlerArgs = typeof defaultOptions;
 
-let formatter: any;
+let formatter: { format: (query: string, options) => string };
 
 export function createPrismaQueryEventHandler(
     args: Partial<CreatePrismaQueryEventHandlerArgs> = {},
@@ -36,9 +36,9 @@ export function createPrismaQueryEventHandler(
             query = unescapeQuery(query);
         }
 
-        query = query.replace(/\?/g, (_, index, string: string) => {
+        query = query.replace(/(\?|\$\d+)/g, (match, p1, offset, string: string) => {
             let parameter = JSON.stringify(params.shift());
-            const previousChar = string.charAt(index - 1);
+            const previousChar = string.charAt(offset - 1);
             if (colorQuery && colorParameter) {
                 parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
             }
@@ -47,7 +47,7 @@ export function createPrismaQueryEventHandler(
         });
 
         if (format) {
-            if (!formatter) {
+            if (!(formatter as typeof formatter | undefined)) {
                 formatter = require('@sqltools/formatter');
             }
             query = formatter.format(query, options).trim();
@@ -62,22 +62,26 @@ export function createPrismaQueryEventHandler(
 }
 
 function unescapeQuery(query: string) {
-    const regex = /`\w+`(\.`\w+`)?(\.`\w+`)?/g;
+    const regex = /(?<quote>["`])\w+["`](\.["`]\w+["`])?(\.["`]\w+["`])?/g;
     const matchAllResult = query.matchAll(regex);
     const matches = Array.from(matchAllResult);
     for (let index = matches.length - 1; index >= 0; index--) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const { 0: fullMatch, index: matchIndex } = matches[index]!;
+        const {
+            0: fullMatch,
+            index: matchIndex,
+            groups: { quote } = {},
+        } = matches[index]!;
         if (!matchIndex || !fullMatch) {
             continue;
         }
-        const parts = fullMatch.split('`.`');
-        let replacement = '';
-        if (parts.length >= 2) {
-            parts.shift();
-            replacement = parts.join('.').slice(0, -1);
-        } else {
-            replacement = parts[0]!.slice(1, -1);
+        let replacement = fullMatch.replace(
+            /["`]\w+["`]\.(["`]\w+["`](\.["`]\w+["`])?)/g,
+            '$1',
+        );
+        if (quote === '`') {
+            const parts = replacement.split('`.`');
+            replacement = parts.join('.').slice(1, -1);
         }
         query =
             query.slice(0, matchIndex) +

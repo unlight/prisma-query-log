@@ -261,3 +261,80 @@ it('comma between parameters with color', () => {
     log(event);
     expect(stripAnsi(query)).toContain('articleId IN ("1", "2", "3")');
 });
+
+it.only('mysql select', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT `query_log_example_db`.`Post`.`id`, `query_log_example_db`.`Post`.`updatedAt` FROM `query_log_example_db`.`Post` WHERE `query_log_example_db`.`Post`.`published` = ?',
+        params: '[true]',
+    };
+    log(event);
+
+    expect(query).toEqual(
+        'SELECT Post.id, Post.updatedAt FROM Post WHERE Post.published = true',
+    );
+});
+
+it.only('postgres select', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'SELECT "public"."Post"."id", "public"."Post"."createdAt" FROM "public"."Post" WHERE "public"."Post"."published" = $1 OFFSET $2',
+        params: '[true,0]',
+    };
+    log(event);
+
+    expect(query).toEqual(
+        'SELECT "Post"."id", "Post"."createdAt" FROM "Post" WHERE "Post"."published" = true OFFSET 0',
+    );
+});
+
+// it.only('postgres insert strings', () => {
+//     let query = '';
+//     const log = createPrismaQueryEventHandler({
+//         logger: (q: string) => (query = q),
+//         format: false,
+//     });
+//     const event = {
+//         ...basePrismaQueryEvent,
+//         query: 'INSERT INTO "public"."User" ("email","name") VALUES ($1,$2) RETURNING "public"."User"."id"',
+//         params: '["alice@prisma.io","Alice"]',
+//     };
+//     log(event);
+
+        query: 'INSERT INTO "public"."User" ("email","name") VALUES ($1,$2) RETURNING "public"."User"."id"',
+        params: '["alice@prisma.io","Alice"]',
+    };
+    log(event);
+
+    expect(query).toEqual(
+        'INSERT INTO "User" ("email","name") VALUES ("alice@prisma.io", "Alice") RETURNING "User"."id"',
+    );
+});
+
+it('update postgres', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        unescape: true,
+        format: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'UPDATE "public"."Post" SET "published" = $1, "updatedAt" = $2 WHERE "public"."Post"."id" IN ($3)',
+        params: '[true,2021-12-21 16:56:47.280795800 UTC,4]',
+    };
+    log(event);
+    expect(query).toEqual(
+        'UPDATE "Post" SET "published" = true, "updatedAt" = "2021-12-21 16:56:47.280795800 UTC" WHERE "Post"."id" IN (4)',
+    );
+});

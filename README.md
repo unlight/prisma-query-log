@@ -104,3 +104,10 @@ https://github.com/unlight/nestolog - Logger for NestJS, implements `LoggerServi
 #### After
 
 ![](docs/after.png)
+
+## Development
+
+```sh
+docker run -it -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=user postgres
+docker run -it -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=query_log_example_db mysql
+```
