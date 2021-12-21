@@ -1,5 +1,5 @@
-import expect from 'expect';
 import stripAnsi from 'strip-ansi';
+import { expect, it } from 'vitest';
 
 import { createPrismaQueryEventHandler, PrismaQueryEvent } from '.';
 
@@ -262,7 +262,7 @@ it('comma between parameters with color', () => {
     expect(stripAnsi(query)).toContain('articleId IN ("1", "2", "3")');
 });
 
-it.only('mysql select', () => {
+it('mysql select', () => {
     let query = '';
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
@@ -280,7 +280,7 @@ it.only('mysql select', () => {
     );
 });
 
-it.only('postgres select', () => {
+it('postgres select', () => {
     let query = '';
     const log = createPrismaQueryEventHandler({
         logger: (q: string) => (query = q),
@@ -298,19 +298,14 @@ it.only('postgres select', () => {
     );
 });
 
-// it.only('postgres insert strings', () => {
-//     let query = '';
-//     const log = createPrismaQueryEventHandler({
-//         logger: (q: string) => (query = q),
-//         format: false,
-//     });
-//     const event = {
-//         ...basePrismaQueryEvent,
-//         query: 'INSERT INTO "public"."User" ("email","name") VALUES ($1,$2) RETURNING "public"."User"."id"',
-//         params: '["alice@prisma.io","Alice"]',
-//     };
-//     log(event);
-
+it('postgres insert strings', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        format: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
         query: 'INSERT INTO "public"."User" ("email","name") VALUES ($1,$2) RETURNING "public"."User"."id"',
         params: '["alice@prisma.io","Alice"]',
     };
