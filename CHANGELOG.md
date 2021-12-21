@@ -1,3 +1,10 @@
+## [3.1.0](https://github.com/unlight/prisma-query-log/compare/v3.0.2...v3.1.0) (2021-12-21)
+
+
+### Features
+
+* Support postgres ([2ad66c2](https://github.com/unlight/prisma-query-log/commit/2ad66c250e492f2124884149987b942d95b5bc41))
+
 ### [3.0.2](https://github.com/unlight/prisma-query-log/compare/v3.0.1...v3.0.2) (2021-10-19)
 
 
