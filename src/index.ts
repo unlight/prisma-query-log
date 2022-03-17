@@ -25,16 +25,21 @@ export function createPrismaQueryEventHandler(
     const colorParameter = options.colorParameter ?? colorQuery;
 
     return function prismaQueryLog(event: PrismaQueryEvent) {
-        console.log('event.params', event.params);
+        console.log('event', event);
         const eventParams = event.params.replace(
             /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.?\d* UTC/g,
             date => `"${date}"`,
         );
+        let query = event.query;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
         console.log('eventParams', eventParams);
-        const params: any[] = JSON.parse(eventParams);
-        console.log('params', params);
-        let query = event.query;
+        const split = eventParams.split(/(","|false,")/);
+        console.log('split', split);
+        try {
+            const params: any[] = JSON.parse(eventParams);
+        } catch (e) {
+            return logger(`Failed parse query ${query}`);
+        }
         if (unescape) {
             query = unescapeQuery(query);
         }

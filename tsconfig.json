@@ -7,7 +7,7 @@
     }
   },
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2018",
     "module": "commonjs",
     "noUncheckedIndexedAccess": true,
     "moduleResolution": "node",
@@ -26,5 +26,5 @@
     "skipLibCheck": true,
     "lib": ["esnext"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src"]
 }

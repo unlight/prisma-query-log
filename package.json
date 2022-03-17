@@ -8,7 +8,7 @@
   "keywords": [],
   "scripts": {
     "test": "npm run tscheck && npm run eslint && npm run test:r",
-    "test:r": "vitest run src/index.spec.ts",
+    "test:r": "vitest src/index.spec.ts",
     "test:w": "npm run test:r -- --watch",
     "eslint": "node node_modules/eslint/bin/eslint \"src/**/*.{ts,tsx}\"",
     "eslint:w": "watchexec -w src \"npm run eslint\"",
@@ -52,6 +52,7 @@
     "precise-commits": "^1.0.2",
     "prettier": "^2.6.0",
     "prisma": "^3.11.0",
+    "request": "^2.88.2",
     "semantic-release": "^19.0.2",
     "strip-ansi": "6.X",
     "ts-node": "^10.7.0",
