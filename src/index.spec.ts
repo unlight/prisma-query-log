@@ -333,3 +333,21 @@ it('update postgres', () => {
         'UPDATE "Post" SET "published" = true, "updatedAt" = "2021-12-21 16:56:47.280795800 UTC" WHERE "Post"."id" IN (4)',
     );
 });
+
+it('backticked string with double quotes', () => {
+    let query = '';
+    const log = createPrismaQueryEventHandler({
+        logger: (q: string) => (query = q),
+        unescape: true,
+        format: false,
+    });
+    const event = {
+        ...basePrismaQueryEvent,
+        query: 'INSERT INTO "public"."Post" ("title") VALUES ($1) RETURNING "public"."Post"."id"',
+        params: '["she will give him ten days of "love," at...","wow "content","]',
+    };
+    log(event);
+    expect(query).toEqual(
+        'INSERT INTO "Post" ("title") VALUES ($1) RETURNING "Post"."id"',
+    );
+});

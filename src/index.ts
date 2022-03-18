@@ -29,25 +29,31 @@ export function createPrismaQueryEventHandler(
             /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.?\d* UTC/g,
             date => `"${date}"`,
         );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-        const params: any[] = JSON.parse(eventParams);
         let query = event.query;
+        const parameters = parseParameters(eventParams);
         if (unescape) {
             query = unescapeQuery(query);
         }
 
-        query = query.replace(/(\?|\$\d+)/g, (match, p1, offset, string: string) => {
-            let parameter = JSON.stringify(params.shift());
-            const previousChar = string.charAt(offset - 1);
-            if (colorQuery && colorParameter) {
-                parameter = colorParameter + parameter + '\u001B[0m' + colorQuery;
-            }
+        if (parameters.length > 0) {
+            query = query.replace(
+                /(\?|\$\d+)/g,
+                (match, p1, offset, string: string) => {
+                    let parameter = JSON.stringify(parameters.shift());
+                    const previousChar = string.charAt(offset - 1);
+                    if (colorQuery && colorParameter) {
+                        parameter =
+                            colorParameter + parameter + '\u001B[0m' + colorQuery;
+                    }
 
-            return (previousChar === ',' ? ' ' : '') + parameter;
-        });
+                    return (previousChar === ',' ? ' ' : '') + parameter;
+                },
+            );
+        }
 
         if (format) {
             if (!(formatter as typeof formatter | undefined)) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, unicorn/prefer-module
                 formatter = require('@sqltools/formatter');
             }
             query = formatter.format(query, options).trim();
@@ -61,16 +67,26 @@ export function createPrismaQueryEventHandler(
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseParameters(parameters: string): any[] {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return JSON.parse(parameters);
+    } catch {
+        return [];
+    }
+}
+
 function unescapeQuery(query: string) {
     const regex = /(?<quote>["`])\w+["`](\.["`]\w+["`])?(\.["`]\w+["`])?/g;
     const matchAllResult = query.matchAll(regex);
     const matches = Array.from(matchAllResult);
     for (let index = matches.length - 1; index >= 0; index--) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const {
             0: fullMatch,
             index: matchIndex,
             groups: { quote } = {},
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         } = matches[index]!;
         if (!matchIndex || !fullMatch) {
             continue;
