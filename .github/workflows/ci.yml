@@ -25,6 +25,9 @@ jobs:
       - name: 'Test'
         run: |
           npm run test
+      - name: 'Test Build'
+        run: |
+          npm install --no-save tsup
           npm run build
   release:
     name: 'Release'
@@ -39,9 +42,12 @@ jobs:
         with:
           node-version: 16
       - name: 'Install depependencies'
-        run: npm install
+        run: |
+          npm install
+          npm install --no-save tsup
       - name: 'Build'
-        run: npm run build
+        run: |
+          npm run build
       - name: 'Release'
         run: |
           npx semantic-release
