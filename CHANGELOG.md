@@ -1,3 +1,10 @@
+### [3.1.1](https://github.com/unlight/prisma-query-log/compare/v3.1.0...v3.1.1) (2022-03-18)
+
+
+### Bug Fixes
+
+* Safe parse parameters ([461dee0](https://github.com/unlight/prisma-query-log/commit/461dee0f44a700de751acfb6693ee6b903e97955)), closes [#4](https://github.com/unlight/prisma-query-log/issues/4)
+
 ## [3.1.0](https://github.com/unlight/prisma-query-log/compare/v3.0.2...v3.1.0) (2021-12-21)
 
 
