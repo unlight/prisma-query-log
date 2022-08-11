@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/unlight/prisma-query-log/compare/v3.1.1...v3.2.0) (2022-08-11)
+
+
+### Features
+
+* Added event duration ([9e61ca0](https://github.com/unlight/prisma-query-log/commit/9e61ca0ecffd866f8389cafa9c06d9cb3eddfb16)), closes [#5](https://github.com/unlight/prisma-query-log/issues/5)
+
 ### [3.1.1](https://github.com/unlight/prisma-query-log/compare/v3.1.0...v3.1.1) (2022-03-18)
 
 
