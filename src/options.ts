@@ -29,6 +29,11 @@ export const defaultOptions = {
      */
 
     /**
+     * Show Query Duration, default is false
+     */
+    queryDuration: false as boolean,
+
+    /**
      * Query language, default is Standard SQL
      */
     language: undefined as 'sql' | 'n1ql' | 'db2' | 'pl/sql' | undefined,
