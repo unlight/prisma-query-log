@@ -20,7 +20,7 @@ export function createPrismaQueryEventHandler(
     if (typeof logger !== 'function') {
         return Function.prototype as (event: PrismaQueryEvent) => void; // noop
     }
-    const { unescape, format } = options;
+    const { unescape, format, queryDuration } = options;
     const colorQuery = format ? false : options.colorQuery;
     const colorParameter = options.colorParameter ?? colorQuery;
 
@@ -30,6 +30,7 @@ export function createPrismaQueryEventHandler(
             date => `"${date}"`,
         );
         let query = event.query;
+        const duration = event.duration;
         const parameters = parseParameters(eventParams);
         if (unescape) {
             query = unescapeQuery(query);
@@ -61,6 +62,10 @@ export function createPrismaQueryEventHandler(
 
         if (colorQuery && colorParameter) {
             query = colorQuery + query + '\u001B[0m';
+        }
+
+        if (queryDuration) {
+            query = `${query} \u001B[33m+${duration}ms\u001B[0m`;
         }
 
         logger(query);
