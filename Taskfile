@@ -3,10 +3,11 @@ PATH="$PWD/node_modules/.bin":$PATH
 set -e
 
 build_tsup() {
-    set -x
-    rm -rfv dist
-    npx tsup src/index.ts --format cjs --target es2018 --dts
-    cp -fv README.md LICENSE package.json dist
+  set -x
+  rm -rfv dist
+  # npm i tsup --no-save on CI/CD (uses esbuild no support of emitDecoratorMetadata)
+  tsup src/index.ts --format cjs --target es2020 --dts --sourcemap
+  cp -fv README.md package.json dist
 }
 
 "$@"
