@@ -1,3 +1,9 @@
+## [3.2.1](https://github.com/unlight/prisma-query-log/compare/v3.2.0...v3.2.1) (2024-07-01)
+
+### Bug Fixes
+
+* Postgres insert date ([de61f33](https://github.com/unlight/prisma-query-log/commit/de61f33ba888ac8d859e2657313a52472ab6cef3))
+
 ## [3.2.0](https://github.com/unlight/prisma-query-log/compare/v3.1.1...v3.2.0) (2022-08-11)
 
 
