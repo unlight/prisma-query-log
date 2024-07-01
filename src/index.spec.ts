@@ -4,11 +4,11 @@ import { expect, it } from 'vitest';
 import { createPrismaQueryEventHandler, PrismaQueryEvent } from '.';
 
 const basePrismaQueryEvent: PrismaQueryEvent = {
-  timestamp: new Date(),
-  query: 'SELECT 1',
-  params: '[]',
   duration: 0,
+  params: '[]',
+  query: 'SELECT 1',
   target: 'quaint::connector::metrics',
+  timestamp: new Date(),
 };
 
 it('smoke', () => {
@@ -30,13 +30,13 @@ it('logger disabled noop', () => {
 it('empty parameters', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: false,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT 1',
     params: '[]',
+    query: 'SELECT 1',
   };
   log(event);
   expect(query).toEqual('SELECT 1');
@@ -45,14 +45,14 @@ it('empty parameters', () => {
 it('replace parameters default', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: false,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT VERSION() LIMIT ? OFFSET ?',
     params: '[1,0]',
+    query: 'SELECT VERSION() LIMIT ? OFFSET ?',
   };
   log(event);
   expect(query).toEqual('SELECT VERSION() LIMIT 1 OFFSET 0');
@@ -61,14 +61,14 @@ it('replace parameters default', () => {
 it('replace parameters format', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: true,
     logger: (q: string) => (query = q),
     unescape: false,
-    format: true,
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT ?, ?',
     params: '[1,"A"]',
+    query: 'SELECT ?, ?',
   };
   log(event);
   expect(query).toEqual(`SELECT 1,
@@ -78,15 +78,15 @@ it('replace parameters format', () => {
 it('unescape fields', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: true,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '["1"]',
     query:
       'SELECT `data`.`Article`.`articleId` FROM `data`.`Article` WHERE `data`.`Article`.`articleId` = ?',
-    params: '["1"]',
   };
   log(event);
   expect(query).toEqual(
@@ -99,16 +99,16 @@ it('colorize query', () => {
   const colorQuery = '\u001B[96m';
   const colorParameter = '\u001B[90m';
   const log = createPrismaQueryEventHandler({
+    colorParameter,
+    colorQuery,
+    format: false,
     logger: (q: string) => (query = q),
     unescape: true,
-    format: false,
-    colorQuery,
-    colorParameter,
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT ?',
     params: '["A"]',
+    query: 'SELECT ?',
   };
   log(event);
   expect(query).toEqual(
@@ -125,15 +125,15 @@ it('colorize query', () => {
 it('parse date parameter', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: false,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '["1",2020-12-25 19:35:06.803149100 UTC, 2021-10-01 00:00:00 UTC]',
     query:
       'INSERT INTO Comment (commentId, createdAt, updatedAt) VALUES (?,?,?)',
-    params: '["1",2020-12-25 19:35:06.803149100 UTC, 2021-10-01 00:00:00 UTC]',
   };
   log(event);
   expect(query).toEqual(
@@ -144,15 +144,15 @@ it('parse date parameter', () => {
 it('update single statement', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: true,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '[2020-12-25 20:02:45.589918800 UTC,"body","1"]',
     query:
       'UPDATE `data`.`Article` SET `updatedAt` = ?, `body` = ? WHERE `data`.`Article`.`articleId` IN (?)',
-    params: '[2020-12-25 20:02:45.589918800 UTC,"body","1"]',
   };
   log(event);
   expect(query).toEqual(
@@ -163,13 +163,13 @@ it('update single statement', () => {
 it('format sql defaults', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: true,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT EmployeeId, FirstName FROM Employees',
     params: '[]',
+    query: 'SELECT EmployeeId, FirstName FROM Employees',
   };
   log(event);
   expect(query).toEqual(`SELECT EmployeeId,\n    FirstName\nFROM Employees`);
@@ -178,13 +178,13 @@ it('format sql defaults', () => {
 it('format join query', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: true,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: `SELECT * FROM Someplace S JOIN Elsewhere AS E WITH (HOLDLOCK) ON 1=1 and X = ? and Y = ?`,
     params: '[1,"B"]',
+    query: `SELECT * FROM Someplace S JOIN Elsewhere AS E WITH (HOLDLOCK) ON 1=1 and X = ? and Y = ?`,
   };
   log(event);
   expect(query).toEqual(
@@ -195,15 +195,15 @@ it('format join query', () => {
 it('format with color', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
-    format: true,
-    colorQuery: '\u001B[96m',
     colorParameter: '\u001B[90m',
+    colorQuery: '\u001B[96m',
+    format: true,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: `SELECT * FROM Someplace S WHERE X = ?`,
     params: '[1]',
+    query: `SELECT * FROM Someplace S WHERE X = ?`,
   };
   log(event);
   expect(query).toEqual(`SELECT *
@@ -214,14 +214,14 @@ WHERE X = 1`);
 it('long parameters', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: true,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: `SELECT Tag.tagId FROM Tag WHERE Tag.tagId IN (?,?,?,?)`,
     params:
       '["cki4upcor0036jov4h6hab7qi", "cki4upcor0037jov4y4syn2bg", "cki4upcor0038jov46rrlfy2a", "cki4upcor0039jov49sm73sfa"]',
+    query: `SELECT Tag.tagId FROM Tag WHERE Tag.tagId IN (?,?,?,?)`,
   };
   log(event);
   expect(query).toEqual(`SELECT Tag.tagId
@@ -237,13 +237,13 @@ WHERE Tag.tagId IN (
 it('comma between parameters without color', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: false,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT 1 WHERE `data`.`Article`.`articleId` IN (?,?,?)',
     params: '["1", "2", "3"]',
+    query: 'SELECT 1 WHERE `data`.`Article`.`articleId` IN (?,?,?)',
   };
   log(event);
   expect(query).toContain('articleId IN ("1", "2", "3")');
@@ -252,15 +252,15 @@ it('comma between parameters without color', () => {
 it('comma between parameters with color', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
-    format: false,
-    colorQuery: '\u001B[96m',
     colorParameter: '\u001B[90m',
+    colorQuery: '\u001B[96m',
+    format: false,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: 'SELECT 1 WHERE `data`.`Article`.`articleId` IN (?,?,?)',
     params: '["1", "2", "3"]',
+    query: 'SELECT 1 WHERE `data`.`Article`.`articleId` IN (?,?,?)',
   };
   log(event);
   expect(stripAnsi(query)).toContain('articleId IN ("1", "2", "3")');
@@ -269,14 +269,14 @@ it('comma between parameters with color', () => {
 it('mysql select', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: false,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '[true]',
     query:
       'SELECT `query_log_example_db`.`Post`.`id`, `query_log_example_db`.`Post`.`updatedAt` FROM `query_log_example_db`.`Post` WHERE `query_log_example_db`.`Post`.`published` = ?',
-    params: '[true]',
   };
   log(event);
 
@@ -288,14 +288,14 @@ it('mysql select', () => {
 it('postgres select', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: false,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '[true,0]',
     query:
       'SELECT "public"."Post"."id", "public"."Post"."createdAt" FROM "public"."Post" WHERE "public"."Post"."published" = $1 OFFSET $2',
-    params: '[true,0]',
   };
   log(event);
 
@@ -307,14 +307,14 @@ it('postgres select', () => {
 it('postgres insert strings', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
-    logger: (q: string) => (query = q),
     format: false,
+    logger: (q: string) => (query = q),
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '["alice@prisma.io","Alice"]',
     query:
       'INSERT INTO "public"."User" ("email","name") VALUES ($1,$2) RETURNING "public"."User"."id"',
-    params: '["alice@prisma.io","Alice"]',
   };
   log(event);
 
@@ -326,15 +326,15 @@ it('postgres insert strings', () => {
 it('update postgres', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: true,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '[true,2021-12-21 16:56:47.280795800 UTC,4]',
     query:
       'UPDATE "public"."Post" SET "published" = $1, "updatedAt" = $2 WHERE "public"."Post"."id" IN ($3)',
-    params: '[true,2021-12-21 16:56:47.280795800 UTC,4]',
   };
   log(event);
   expect(query).toEqual(
@@ -345,15 +345,15 @@ it('update postgres', () => {
 it('backticked string with double quotes', () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: true,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
+    params: '["she will give him ten days of "love," at...","wow "content","]',
     query:
       'INSERT INTO "public"."Post" ("title") VALUES ($1) RETURNING "public"."Post"."id"',
-    params: '["she will give him ten days of "love," at...","wow "content","]',
   };
   log(event);
   expect(query).toEqual(
@@ -364,14 +364,14 @@ it('backticked string with double quotes', () => {
 it('postgres insert with date escaped', async () => {
   let query = '';
   const log = createPrismaQueryEventHandler({
+    format: false,
     logger: (q: string) => (query = q),
     unescape: true,
-    format: false,
   });
   const event = {
     ...basePrismaQueryEvent,
-    query: `INSERT INTO "public"."Recipe" ("_id", "creationDate") VALUES ($1,$2) RETURNING "public"."Recipe"."_id", "public"."Recipe"."creationDate"`,
     params: '[1,"2024-07-01 17:06:41.583 UTC"]',
+    query: `INSERT INTO "public"."Recipe" ("_id", "creationDate") VALUES ($1,$2) RETURNING "public"."Recipe"."_id", "public"."Recipe"."creationDate"`,
   };
   log(event);
   expect(query).not.toContain('$1');

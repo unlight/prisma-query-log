@@ -20,7 +20,7 @@ export function createPrismaQueryEventHandler(
   if (typeof logger !== 'function') {
     return Function.prototype as (event: PrismaQueryEvent) => void; // noop
   }
-  const { unescape, format } = options;
+  const { format, unescape } = options;
   const colorQuery = format ? false : options.colorQuery;
   const colorParameter = options.colorParameter ?? colorQuery;
 
@@ -48,7 +48,7 @@ export function createPrismaQueryEventHandler(
 
     if (format) {
       if (!(formatter as typeof formatter | undefined)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, unicorn/prefer-module
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         formatter = require('@sqltools/formatter');
       }
       query = formatter.format(query, options).trim();
@@ -84,9 +84,8 @@ function unescapeQuery(query: string) {
   for (let index = matches.length - 1; index >= 0; index--) {
     const {
       0: fullMatch,
-      index: matchIndex,
       groups: { quote } = {},
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      index: matchIndex,
     } = matches[index]!;
     if (!matchIndex || !fullMatch) {
       continue;
