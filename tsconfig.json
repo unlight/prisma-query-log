@@ -2,12 +2,12 @@
   "ts-node": {
     "transpileOnly": true,
     "compilerOptions": {
-      "target": "es2018",
+      "target": "es2022",
       "module": "commonjs"
     }
   },
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es2022",
     "module": "commonjs",
     "noUncheckedIndexedAccess": true,
     "moduleResolution": "node",
